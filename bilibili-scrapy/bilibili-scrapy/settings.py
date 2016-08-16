@@ -19,8 +19,8 @@ SCHEDULER_PERSIST = True
 # SCHEDULER_QUEUE_CLASS = "scrapy_redis.queue.SpiderStack"
 
 ITEM_PIPELINES = {
-    # 'bilibili-scrapy.pipelines.ExamplePipeline': 300,
-    'scrapy_redis.pipelines.RedisPipeline': 400,
+    'bilibili-scrapy.pipelines.VideoInfoPipeline': 300,
+    # 'scrapy_redis.pipelines.RedisPipeline': 400,
 }
 
 LOG_LEVEL = 'DEBUG'
