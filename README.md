@@ -7,7 +7,6 @@ Basically, this project can run. ⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄
 Correctly run with only one master database, multi-nodes database hasn't been tested yet.
 Still have problems to crawl bangumi category videos in bangumi.bilibili.com.
 Crawling sometimes stuck with unknown reason. (╯‵□′)╯︵┻━┻  
-Redis binaries and configuration files haven't been uploaded.
 Will add some code to analyse the data we crawled. 
 
 # B站爬虫- ( ○’ω’○)つロ
@@ -19,7 +18,6 @@ Will add some code to analyse the data we crawled.
 单节点数据库可以运行，多节点数据库还没有测试过。
 番剧分类还不能正常爬取。
 爬取有时会因为未知原因假死。 (╯‵□′)╯︵┻━┻  
-Redis的二进制文件和配置文件还没有上传。
 加入一些代码以分析爬取得到的数据。
 
 

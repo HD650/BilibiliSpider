@@ -7,6 +7,7 @@ from scrapy.item import Item, Field
 
 
 class BilibiliVideo(Item):
+    """需要记录的video的主要参数，item先辈存储在redis中，后被导入到sql中进行处理"""
     name = Field()
     av = Field()
     plays = Field()
@@ -17,6 +18,7 @@ class BilibiliVideo(Item):
     category = Field()
     replys = Field()
     favorites = Field()
+    update_time = Field()
 
 video_classifier = re.compile("http://.*/video/av[\d]*/")
 category_extractor = re.compile("http://www.bilibili.com/list/default-(\d*)-")
@@ -24,16 +26,38 @@ number_identifier = re.compile("\d+")
 
 
 class VideoSpider(RedisCrawlSpider):
-    """Spider that reads urls from redis queue (myspider:start_urls)."""
+    """爬取视频信息的爬虫，目前不支持番剧分类的视频爬取."""
     name = 'video_spider'
-    redis_key = 'mycrawler:start_urls'
+    redis_key = 'video_spider:start_urls'
 
-    def start_requests(self):
-        return [Request("http://www.bilibili.com/video/game.html")]
-        #return [Request("http://www.bilibili.com/video/bangumi-two-1.html")]
-        #return [Request("http://www.bilibili.com/video/av142153/", callback=self.parse_page)]
+    # def start_requests(self):
+    #     return [Request("http://www.bilibili.com/video/game.html")]
+    #     return [Request("http://www.bilibili.com/video/bangumi-two-1.html")]
+    #     return [Request("http://www.bilibili.com/video/av142153/", callback=self.parse_page)]
+
+    def next_requests(self):
+        """因为原版实现会出现错误，我们重写这个函数把他修正"""
+        use_set = self.settings.getbool('REDIS_START_URLS_AS_SET')
+        fetch_one = self.server.spop if use_set else self.server.lpop
+        # XXX: Do we need to use a timeout here?
+        found = 0
+        while found < self.redis_batch_size:
+            data = fetch_one(self.redis_key).decode('utf8')
+            if not data:
+                # Queue empty.
+                break
+            req = self.make_request_from_data(data)
+            if req:
+                yield req
+                found += 1
+            else:
+                self.logger.debug("Request not made from data: %r", data)
+
+        if found:
+            self.logger.debug("Read %s requests from '%s'", found, self.redis_key)
 
     def parse(self, response):
+        """爬取目录或者首页"""
         # 找到大分类下的小分类目录页面
         category_href = response.xpath("//ul[@class='n_num']//a/@href").extract()
         if category_href:
@@ -70,6 +94,7 @@ class VideoSpider(RedisCrawlSpider):
                 yield Request(href, callback=self.parse_page)
 
     def parse_page(self, response):
+        """从视频页爬取其他视频页，并爬取信息"""
         # 爬取视频页面的其他视频超链接
         raw_href = response.xpath("//a[contains(@href,'/video/av')]/@href").extract()
         if raw_href:
