@@ -1,9 +1,11 @@
 import re
-from scrapy_redis.spiders import RedisCrawlSpider
+from scrapy_redis.spiders import RedisCrawlSpider, DEFAULT_START_URLS_BATCH_SIZE, DEFAULT_START_URLS_KEY
 from scrapy.http import Request
 import urllib.request
 import json
+from scrapy import signals
 from scrapy.item import Item, Field
+from rediscluster import StrictRedisCluster
 
 
 class BilibiliVideo(Item):
@@ -30,10 +32,52 @@ class VideoSpider(RedisCrawlSpider):
     name = 'video_spider'
     redis_key = 'video_spider:start_urls'
 
-    # def start_requests(self):
-    #     return [Request("http://www.bilibili.com/video/game.html")]
-    #     return [Request("http://www.bilibili.com/video/bangumi-two-1.html")]
-    #     return [Request("http://www.bilibili.com/video/av142153/", callback=self.parse_page)]
+    def setup_redis(self, crawler=None):
+        """重写该函数以支持redis集群模式"""
+        if self.server is not None and isinstance(self.server, StrictRedisCluster):
+            return
+
+        if crawler is None:
+            crawler = getattr(self, 'crawler', None)
+
+        if crawler is None:
+            raise ValueError("crawler is required")
+
+        settings = crawler.settings
+
+        if self.redis_key is None:
+            self.redis_key = settings.get(
+                'REDIS_START_URLS_KEY', DEFAULT_START_URLS_KEY,
+            )
+
+        self.redis_key = self.redis_key % {'name': self.name}
+
+        if not self.redis_key.strip():
+            raise ValueError("redis_key must not be empty")
+
+        if self.redis_batch_size is None:
+            self.redis_batch_size = settings.getint(
+                'REDIS_START_URLS_BATCH_SIZE', DEFAULT_START_URLS_BATCH_SIZE,
+            )
+
+        try:
+            self.redis_batch_size = int(self.redis_batch_size)
+        except (TypeError, ValueError):
+            raise ValueError("redis_batch_size must be an integer")
+
+        self.logger.info("Reading start URLs from redis key '%(redis_key)s' "
+                         "(batch size: %(redis_batch_size)s)", self.__dict__)
+        try:
+            start_node = [settings.getdict('REDIS_CLUSTER_START_NODE')]
+        except Exception:
+            raise ValueError("redis cluster start node required")
+        self.server = StrictRedisCluster(startup_nodes=start_node)
+        crawler.signals.connect(self.spider_idle, signal=signals.spider_idle)
+
+    def start_requests(self):
+        return [Request("http://www.bilibili.com/video/game.html")]
+        return [Request("http://www.bilibili.com/video/bangumi-two-1.html")]
+        return [Request("http://www.bilibili.com/video/av142153/", callback=self.parse_page)]
 
     def next_requests(self):
         """因为原版实现会出现错误，我们重写这个函数把他修正"""
