@@ -4,23 +4,12 @@ from scrapy.http import Request
 import urllib.request
 import json
 from scrapy import signals
-from scrapy.item import Item, Field
 from rediscluster import StrictRedisCluster
+import sys
+sys.path.append(r'..')
+sys.path.append(r'.\bilibili-scrapy')
+from items import BilibiliVideo
 
-
-class BilibiliVideo(Item):
-    """需要记录的video的主要参数，item先辈存储在redis中，后被导入到sql中进行处理"""
-    name = Field()
-    av = Field()
-    plays = Field()
-    barrages = Field()
-    coins = Field()
-    date = Field()
-    author = Field()
-    category = Field()
-    replys = Field()
-    favorites = Field()
-    update_time = Field()
 
 video_classifier = re.compile("http://.*/video/av[\d]*/")
 category_extractor = re.compile("http://www.bilibili.com/list/default-(\d*)-")
@@ -74,10 +63,11 @@ class VideoSpider(RedisCrawlSpider):
         self.server = StrictRedisCluster(startup_nodes=start_node)
         crawler.signals.connect(self.spider_idle, signal=signals.spider_idle)
 
-    def start_requests(self):
-        return [Request("http://www.bilibili.com/video/game.html")]
-        return [Request("http://www.bilibili.com/video/bangumi-two-1.html")]
-        return [Request("http://www.bilibili.com/video/av142153/", callback=self.parse_page)]
+    # def start_requests(self):
+    #     return [Request("http://www.bilibili.com/video/ent.html")]
+    #     return [Request("http://www.bilibili.com/video/game.html")]
+    #     return [Request("http://www.bilibili.com/video/bangumi-two-1.html")]
+    #     return [Request("http://www.bilibili.com/video/av142153/", callback=self.parse_page)]
 
     def next_requests(self):
         """因为原版实现会出现错误，我们重写这个函数把他修正"""
@@ -101,15 +91,25 @@ class VideoSpider(RedisCrawlSpider):
             self.logger.debug("Read %s requests from '%s'", found, self.redis_key)
 
     def parse(self, response):
-        """爬取目录或者首页"""
+        """爬取首页"""
         # 找到大分类下的小分类目录页面
         category_href = response.xpath("//ul[@class='n_num']//a/@href").extract()
         if category_href:
             for category in category_href:
                 href = 'http://www.bilibili.com' + category
-                yield Request(href, callback=self.parse)
+                yield Request(href, callback=self.parse_index)
 
-        # 如果发现是一个目录页面，就构造请求，遍历目录
+        # 无论是目录还是首页，都有其他视频的超链接，我们也爬取他们
+        raw_href = response.xpath("//a[contains(@href,'/video/av')]/@href").extract()
+        if raw_href:
+            for href in raw_href:
+                if not video_classifier.match(href):
+                    href = 'http://www.bilibili.com' + href
+                yield Request(href, callback=self.parse_item)
+
+    def parse_index(self, response):
+        """爬取目录页，bilibili目录页在开发过程中，其结构似乎做了修改，pagelist不是随html直接返回的了，
+        所以爬取变得困难，需要伪造请求"""
         page_num = response.xpath("//div[@class='pagelistbox']//a/text()").extract()
         current_category = response.xpath("//ul[@class='n_num']//li[@class='on']//@tid").extract()
         if current_category:
@@ -120,6 +120,7 @@ class VideoSpider(RedisCrawlSpider):
                 current_category = raw.groups()[0]
             else:
                 current_category = ''
+        # 老pagelist页面中，翻页超链接是渲染在html中的，现在似乎是在js中动态创建的
         if page_num:
             for num in page_num:
                 if number_identifier.match(num):
@@ -128,6 +129,20 @@ class VideoSpider(RedisCrawlSpider):
                     temp_request = Request(href, callback=self.parse)
                     temp_request.category = current_category
                     yield temp_request
+        # 通过抓包我们可以发现，新翻页是通过动态请求达到的，但是新情求的视频似乎不全，我们还是使用老方法
+        else:
+            # raw_url = "http://api.bilibili.com/archive_rank/getarchiverankbypartion?type=jsonp&" \
+            #           "tid="+str(current_category)+"&pn=1"
+            # response = urllib.request.urlopen(raw_url, timeout=10)
+            # raw_data = json.loads(response.read().decode("utf8"))
+            # if raw_data['message'] == 'ok':
+            #     video_amount = raw_data['data']['page']['count']
+            #     page_size = raw_data['data']['page']['size']
+            href = "http://www.bilibili.com/list/default-" + str(current_category) \
+                           + "-" + str(1) + "-2016-08-07~2016-08-14.html"
+            temp_request = Request(href, callback=self.parse_index)
+            temp_request.category = current_category
+            yield temp_request
 
         # 无论是目录还是首页，都有其他视频的超链接，我们也爬取他们
         raw_href = response.xpath("//a[contains(@href,'/video/av')]/@href").extract()
@@ -135,9 +150,9 @@ class VideoSpider(RedisCrawlSpider):
             for href in raw_href:
                 if not video_classifier.match(href):
                     href = 'http://www.bilibili.com' + href
-                yield Request(href, callback=self.parse_page)
+                yield Request(href, callback=self.parse_item)
 
-    def parse_page(self, response):
+    def parse_item(self, response):
         """从视频页爬取其他视频页，并爬取信息"""
         # 爬取视频页面的其他视频超链接
         raw_href = response.xpath("//a[contains(@href,'/video/av')]/@href").extract()
@@ -145,7 +160,7 @@ class VideoSpider(RedisCrawlSpider):
             for href in raw_href:
                 if not video_classifier.match(href):
                     href = 'http://www.bilibili.com' + href
-                yield Request(href, callback=self.parse_page)
+                yield Request(href, callback=self.parse_item)
 
         # 爬取视频主要信息
         item = BilibiliVideo()

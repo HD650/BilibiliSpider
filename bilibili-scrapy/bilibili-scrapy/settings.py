@@ -5,18 +5,22 @@
 #
 #     http://doc.scrapy.org/topics/settings.html
 #
+import sys
+sys.path.append(r'..')
+sys.path.append(r'.\bilibili-scrapy')
+
 SPIDER_MODULES = ['bilibili-scrapy.spiders']
 NEWSPIDER_MODULE = 'bilibili-scrapy.spiders'
 
 USER_AGENT = 'Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) ' \
              'Chrome/32.0.1667.0 Safari/537.36'
 
-DUPEFILTER_CLASS = "cluster-modification.dupefilter.ClusterDupeFilter"
-SCHEDULER = "cluster-modification.scheduler.ClusterScheduler"
+DUPEFILTER_CLASS = "cluster_modification.dupefilter.ClusterDupeFilter"
+SCHEDULER = "cluster_modification.scheduler.ClusterScheduler"
 SCHEDULER_PERSIST = True
-SCHEDULER_QUEUE_CLASS = "cluster-modification.queue.ClusterSpiderPriorityQueue"
-# SCHEDULER_QUEUE_CLASS = "cluster-modification.queue.ClusterSpiderQueue"
-# SCHEDULER_QUEUE_CLASS = "cluster-modification.queue.ClusterSpiderStack"
+# SCHEDULER_QUEUE_CLASS = "cluster_modification.queue.ClusterSpiderPriorityQueue"
+SCHEDULER_QUEUE_CLASS = "cluster_modification.queue.ClusterSpiderQueue"
+# SCHEDULER_QUEUE_CLASS = "cluster_modification.queue.ClusterSpiderStack"
 
 ITEM_PIPELINES = {
     'bilibili-scrapy.pipelines.VideoInfoPipeline': 300,
