@@ -126,7 +126,7 @@ class VideoSpider(RedisCrawlSpider):
                 if number_identifier.match(num):
                     href = "http://www.bilibili.com/list/default-" + str(current_category) \
                            + "-" + str(num) + "-2016-08-07~2016-08-14.html"
-                    temp_request = Request(href, callback=self.parse)
+                    temp_request = Request(href, callback=self.parse_index)
                     temp_request.category = current_category
                     yield temp_request
         # 通过抓包我们可以发现，新翻页是通过动态请求达到的，但是新情求的视频似乎不全，我们还是使用老方法
