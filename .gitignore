@@ -1,0 +1,4 @@
+*.aof
+bilibili-scrapy/redis-64.2.8.2101/server1/nodes-7000.conf
+*.conf
+bilibili-scrapy/redis-64.2.8.2101/server2/nodes-7001.conf
