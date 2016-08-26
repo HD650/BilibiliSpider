@@ -6,6 +6,7 @@ from scrapy.utils.misc import load_object
 from scrapy.utils.serialize import ScrapyJSONEncoder
 from twisted.internet.threads import deferToThread
 from rediscluster import StrictRedisCluster
+from scrapy_redis import connection
 import datetime
 
 
@@ -28,13 +29,16 @@ class VideoInfoPipeline(object):
     @classmethod
     def from_settings(cls, settings):
         """我们使用了StrictRedisCluster作为客户端，因为python接口的StrictRedis客户端不支持集群操作"""
-        try:
-            start_node = [settings.getdict('REDIS_CLUSTER_START_NODE')]
-        except Exception:
-            raise ValueError("redis cluster start node required")
-        cluster = StrictRedisCluster(startup_nodes=start_node)
+        if settings.getbool('REDIS_IS_CLUSTER', True):
+            try:
+                start_node = [settings.getdict('REDIS_CLUSTER_START_NODE')]
+            except Exception:
+                raise ValueError("redis cluster start node required")
+            server = StrictRedisCluster(startup_nodes=start_node)
+        else:
+            server = connection.from_settings(settings)
         params = {
-            'server': cluster,
+            'server': server,
         }
         if settings.get('REDIS_ITEMS_KEY'):
             params['key'] = settings['REDIS_ITEMS_KEY']

@@ -5,6 +5,7 @@ import urllib.request
 import json
 from scrapy import signals
 from rediscluster import StrictRedisCluster
+from scrapy_redis import connection
 import sys
 sys.path.append(r'..')
 sys.path.append(r'.\bilibili-scrapy')
@@ -56,19 +57,22 @@ class VideoSpider(RedisCrawlSpider):
 
         self.logger.info("Reading start URLs from redis key '%(redis_key)s' "
                          "(batch size: %(redis_batch_size)s)", self.__dict__)
-        try:
-            start_node = [settings.getdict('REDIS_CLUSTER_START_NODE')]
-        except Exception:
-            raise ValueError("redis cluster start node required")
-        self.server = StrictRedisCluster(startup_nodes=start_node)
+        if settings.getbool('REDIS_IS_CLUSTER', True):
+            try:
+                start_node = [settings.getdict('REDIS_CLUSTER_START_NODE')]
+            except Exception:
+                raise ValueError("redis cluster start node required")
+            self.server = StrictRedisCluster(startup_nodes=start_node)
+        else:
+            self.server = connection.from_settings(crawler.settings)
         crawler.signals.connect(self.spider_idle, signal=signals.spider_idle)
 
     # 测试用初始url
-    # def start_requests(self):
-    #     return [Request("http://www.bilibili.com/video/ent.html")]
-    #     return [Request("http://www.bilibili.com/video/game.html")]
-    #     return [Request("http://www.bilibili.com/video/bangumi-two-1.html")]
-    #     return [Request("http://www.bilibili.com/video/av142153/", callback=self.parse_page)]
+    def start_requests(self):
+        return [Request("http://www.bilibili.com/video/ent.html")]
+        return [Request("http://www.bilibili.com/video/game.html")]
+        return [Request("http://www.bilibili.com/video/bangumi-two-1.html")]
+        return [Request("http://www.bilibili.com/video/av142153/", callback=self.parse_page)]
 
     def next_requests(self):
         """因为原版实现会出现解码错误，我们重写这个函数把他修正"""
