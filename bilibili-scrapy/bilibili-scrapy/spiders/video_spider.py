@@ -68,11 +68,11 @@ class VideoSpider(RedisCrawlSpider):
         crawler.signals.connect(self.spider_idle, signal=signals.spider_idle)
 
     # 测试用初始url
-    def start_requests(self):
-        return [Request("http://www.bilibili.com/video/ent.html")]
-        return [Request("http://www.bilibili.com/video/game.html")]
-        return [Request("http://www.bilibili.com/video/bangumi-two-1.html")]
-        return [Request("http://www.bilibili.com/video/av142153/", callback=self.parse_page)]
+    # def start_requests(self):
+    #     return [Request("http://www.bilibili.com/video/ent.html")]
+    #     return [Request("http://www.bilibili.com/video/game.html")]
+    #     return [Request("http://www.bilibili.com/video/bangumi-two-1.html")]
+    #     return [Request("http://www.bilibili.com/video/av142153/", callback=self.parse_page)]
 
     def next_requests(self):
         """因为原版实现会出现解码错误，我们重写这个函数把他修正"""

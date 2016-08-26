@@ -13,6 +13,11 @@ redis-py-cluster
 Basically, this project can run. ⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄  
 ## Changes##
 
+ - 8.26
+Clear the old dirty data in redis.   
+Slove some problems occured when using different version of scrapy-redis with author.   
+The spider now support both cluster and  single node mode of redis, you can config it in setting.py.   
+
  - 8.24
 
 Bilibili changed its logic in index page, so our spider should be modified too.   
@@ -58,6 +63,11 @@ redis-py-cluster
 ## 进度 ##
 该工程目前基本可以运行。⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄  
 ## 更改 ##
+ - 8.26
+
+删除了redis中的旧数据。    
+解决了和作者使用不同版本scrapy-redis时出现的版本问题。    
+爬虫下现在同时支持集群redis和单节点redis，你可以在setting.py中配置。     
 
  - 8.24
 
@@ -78,7 +88,7 @@ redis的二进制执行文件已经上传。
  - 8.15
 
 基础代码上传。   
-## 问题(╯‵□′)╯︵┻━┻ ## 
+## 问题(╯‵□′)╯︵┻━┻ 
 番剧分类还不能正常爬取。       
 Redis集群不支持事物，会造成一些原子性问题。
 ## 未来计划 ##
