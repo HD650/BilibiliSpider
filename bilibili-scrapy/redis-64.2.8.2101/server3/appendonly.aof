@@ -6,3 +6,11 @@ $1
 *1
 $8
 flushall
+*2
+$6
+SELECT
+$1
+0
+*1
+$8
+flushall

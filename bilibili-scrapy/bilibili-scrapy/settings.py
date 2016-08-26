@@ -5,6 +5,8 @@
 #
 #     http://doc.scrapy.org/topics/settings.html
 #
+
+# 添加正确的目录防止import失败
 import sys
 sys.path.append(r'..')
 sys.path.append(r'.\bilibili-scrapy')
@@ -12,9 +14,11 @@ sys.path.append(r'.\bilibili-scrapy')
 SPIDER_MODULES = ['bilibili-scrapy.spiders']
 NEWSPIDER_MODULE = 'bilibili-scrapy.spiders'
 
+# 伪装成浏览器
 USER_AGENT = 'Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) ' \
              'Chrome/32.0.1667.0 Safari/537.36'
 
+# 使用支持redis集群的判重池和调度池
 DUPEFILTER_CLASS = "cluster_modification.dupefilter.ClusterDupeFilter"
 SCHEDULER = "cluster_modification.scheduler.ClusterScheduler"
 SCHEDULER_PERSIST = True
@@ -22,6 +26,7 @@ SCHEDULER_PERSIST = True
 SCHEDULER_QUEUE_CLASS = "cluster_modification.queue.ClusterSpiderQueue"
 # SCHEDULER_QUEUE_CLASS = "cluster_modification.queue.ClusterSpiderStack"
 
+# 使用pipeline将爬取的数据存入redis数据库中
 ITEM_PIPELINES = {
     'bilibili-scrapy.pipelines.VideoInfoPipeline': 300,
     # 'scrapy_redis.pipelines.RedisPipeline': 400,
@@ -29,13 +34,17 @@ ITEM_PIPELINES = {
 
 LOG_LEVEL = 'DEBUG'
 
-# Introduce an artifical delay to make use of parallelism. to speed up the
-# crawl.
+# 下载的延迟，减轻服务器端的负担，同时因为能并行化，爬取会更快（?）
 DOWNLOAD_DELAY = 1
 
+# 配置我们的redis集群的入口，事实上只要一个结点就可以连接到整个集群
 # REDIS_HOST = 'localhost'
 # REDIS_PORT = 7000
 REDIS_CLUSTER_START_NODE = {'host': 'localhost', 'port': 7000}
+
+# 每个爬虫只从初始url池中拿取一个连接
 REDIS_START_URLS_BATCH_SIZE = 1
+
+# 存储item的key，这个要改，以把key分散在hash池中
 REDIS_ITEMS_KEY = 'video_info'
 

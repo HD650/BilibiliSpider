@@ -1,5 +1,5 @@
 import re
-from scrapy_redis.spiders import RedisCrawlSpider, DEFAULT_START_URLS_BATCH_SIZE, DEFAULT_START_URLS_KEY
+from scrapy_redis.spiders import RedisCrawlSpider
 from scrapy.http import Request
 import urllib.request
 import json
@@ -36,7 +36,7 @@ class VideoSpider(RedisCrawlSpider):
 
         if self.redis_key is None:
             self.redis_key = settings.get(
-                'REDIS_START_URLS_KEY', DEFAULT_START_URLS_KEY,
+                'REDIS_START_URLS_KEY', '%(name)s:start_urls',
             )
 
         self.redis_key = self.redis_key % {'name': self.name}
@@ -46,7 +46,7 @@ class VideoSpider(RedisCrawlSpider):
 
         if self.redis_batch_size is None:
             self.redis_batch_size = settings.getint(
-                'REDIS_START_URLS_BATCH_SIZE', DEFAULT_START_URLS_BATCH_SIZE,
+                'REDIS_START_URLS_BATCH_SIZE', 1,
             )
 
         try:
@@ -63,6 +63,7 @@ class VideoSpider(RedisCrawlSpider):
         self.server = StrictRedisCluster(startup_nodes=start_node)
         crawler.signals.connect(self.spider_idle, signal=signals.spider_idle)
 
+    # 测试用初始url
     # def start_requests(self):
     #     return [Request("http://www.bilibili.com/video/ent.html")]
     #     return [Request("http://www.bilibili.com/video/game.html")]
@@ -70,7 +71,7 @@ class VideoSpider(RedisCrawlSpider):
     #     return [Request("http://www.bilibili.com/video/av142153/", callback=self.parse_page)]
 
     def next_requests(self):
-        """因为原版实现会出现错误，我们重写这个函数把他修正"""
+        """因为原版实现会出现解码错误，我们重写这个函数把他修正"""
         use_set = self.settings.getbool('REDIS_START_URLS_AS_SET')
         fetch_one = self.server.spop if use_set else self.server.lpop
         # XXX: Do we need to use a timeout here?
