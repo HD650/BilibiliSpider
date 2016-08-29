@@ -13,7 +13,12 @@ redis-py-cluster
 Basically, this project can run. ⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄  
 ## Changes##
 
+ - 8.29
+
+Tested the muti-spider crawling and redis cluster in different machines, didn't find errors from now.    
+
  - 8.26
+
 Clear the old dirty data in redis.   
 Slove some problems occured when using different version of scrapy-redis with author.   
 The spider now support both cluster and  single node mode of redis, you can config it in setting.py.   
@@ -63,6 +68,10 @@ redis-py-cluster
 ## 进度 ##
 该工程目前基本可以运行。⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄  
 ## 更改 ##
+
+ - 8.29
+
+测试了多机器下的多爬虫和redis集群运行，目前没有发现问题。  
  - 8.26
 
 删除了redis中的旧数据。    
