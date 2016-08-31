@@ -13,6 +13,12 @@ redis-py-cluster
 Basically, this project can run. ⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄  
 ## Changes##
 
+ - 8.31
+
+Make the distribution of item keys more flat so they can cover all the nodes in cluster.   
+Now the process_item.py can iterate all items in redis(iterating will delete the item). Soon, it can transfer the item to SQL database.    
+Added some batch files to start the cluster(3 instances) and spiders(5 instances) more conveniently and fast.   
+
  - 8.29
 
 Tested the muti-spider crawling and redis cluster in different machines, didn't find errors from now.    
@@ -45,10 +51,9 @@ Fundamental code updated.
 ## Problem(╯‵□′)╯︵┻━┻ ##
 Still have problems to crawl bangumi category videos in bangumi.bilibili.com.     
 Redis cluster doesn't support transaction, may cause some atomic problem.   
+Didn't test wether access to redis cluster faster than directly access to SQL database. (Some books and documents recommend to use redis but i haven't test this case yet)     
 ## Future ##
 Will add some code to analyse the data we crawled.  
-Correctly run multi-spiders with cluster database deployed on the same machine，running with database and spiders deployed on different machines haven't been tested yet.  
-Distribute the keys of items in a more flat manner, so the payload is distributed to different redis notes.  
 Analyse the age and gender of users who reply the popular videos.
 One script to start the whole project easily.   
 Deploy a webserver to show all the data and analysis result.
@@ -68,6 +73,12 @@ redis-py-cluster
 ## 进度 ##
 该工程目前基本可以运行。⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄  
 ## 更改 ##
+
+ - 8.31
+
+使item的key均匀的分布在redis的空间中，使负载分散在集群的各个节点内。   
+现在process_item.py可以迭代出redis中的所有item，不久后他就能把item都转存在sql数据库内。   
+增加了能快速方便启动集群(3个实例)和爬虫(5个实例)的批处理文件。      
 
  - 8.29
 
@@ -99,11 +110,10 @@ redis的二进制执行文件已经上传。
 基础代码上传。   
 ## 问题(╯‵□′)╯︵┻━┻ 
 番剧分类还不能正常爬取。       
-Redis集群不支持事物，会造成一些原子性问题。
+Redis集群不支持事物，会造成一些原子性问题。  
+还未测试连接redis集群是否真的快于连接SQL数据库。(一些数据和文档推荐使用redis最为数据库，但是我还没有测试哪个更快)
 ## 未来计划 ##
-加入一些代码以分析爬取得到的数据。  
-单机器上的多爬虫进程和redis集群可以正常运行，多机器的集群还没有测试。  
-把item的key分散到redis的hash空间去，这样可以把数据库的负载分散。   
+加入一些代码以分析爬取得到的数据。       
 对于高播放视频，分析其回复用户的注册年龄和性别。   
 通过一个脚本运行全部的工程。  
 部署一个web服务来展示数据和分析结果。  
