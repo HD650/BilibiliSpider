@@ -58,11 +58,16 @@ class VideoInfoPipeline(object):
         return deferToThread(self._process_item, item, spider)
 
     def _process_item(self, item, spider):
-        """不适用list来存储item信息，因为我们需要大量的查找操作，所以我们使用hash"""
+        """不应该使用单一的hash容器来储存爬取到的item，这样在单节点的redis数据库中是可行的，
+        但是对于redis集群来说，如果item都存在一个key中，集群的意义就不存在了，我们应该把item的key分散在整个
+        hash空间中，再通过一个单一的set容器来储存所有item的key"""
         key = self.item_key(item, spider)
         item["update_time"] = datetime.datetime.now()
         data = self.serialize(item)
-        self.server.hset(key, str(item["av"]), data)
+        changed = self.server.sadd(key, str(item["av"]))
+        if changed == 0:
+            print("crawled a duplicate video, there must be something wrong, av number: "+str(item['av']))
+        self.server.set(str(item["av"]), data)
         return item
 
     def item_key(self, item, spider):
