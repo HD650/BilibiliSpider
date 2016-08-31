@@ -35,5 +35,15 @@ class ClusterScheduler(Scheduler):
             raise ValueError("redis cluster start node required")
         server = StrictRedisCluster(startup_nodes=start_node)
         connection_state = server.ping()
-        print(str(connection_state))
+        cluster_num = 0
+        for key in connection_state:
+            if connection_state[key] is True:
+                cluster_num += 1
+                print("Connected to node "+str(key)+" successfully!")
+            else:
+                print("Failed to connect to node "+str(key)+"!")
+        if cluster_num <= 2:
+            print("No enough nodes found in cluster! Exiting...")
+            exit()
+        print("Connected to the redis cluster finished! Working with "+str(cluster_num)+" nodes")
         return cls(server=server, **kwargs)
