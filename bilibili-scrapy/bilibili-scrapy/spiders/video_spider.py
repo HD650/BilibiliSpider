@@ -3,6 +3,8 @@ from scrapy_redis.spiders import RedisCrawlSpider
 from scrapy.http import Request
 import urllib.request
 import json
+import time
+import datetime
 from scrapy import signals
 from rediscluster import StrictRedisCluster
 from scrapy_redis import connection
@@ -195,5 +197,8 @@ class VideoSpider(RedisCrawlSpider):
         item['coins'] = raw_data['data']['coin']
         item['replys'] = raw_data['data']['reply']
         item['favorites'] = raw_data['data']['favorite']
+        if len(item['author']) == 0:
+            # TODO: some item is empty, don't know why
+            print(response.body)
         yield item
 
