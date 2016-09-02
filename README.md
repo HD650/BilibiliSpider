@@ -13,6 +13,11 @@ redis-py-cluster
 Basically, this project can run. ⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄  
 ## Changes##
 
+ - 9.2
+
+Now item_process.py can transfer all item in redis to SQL database which configured in settings.py.        
+Fix some format problem in datetime.   
+
  - 8.31
 
 Make the distribution of item keys more flat so they can cover all the nodes in cluster.   
@@ -73,6 +78,11 @@ redis-py-cluster
 ## 进度 ##
 该工程目前基本可以运行。⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄  
 ## 更改 ##
+
+ - 9.2
+
+现在可以使用item_process.py来把所有item转存到SQL数据库中，SQL数据库在settings文件内配置。         
+修复了一些日期格式问题。   
 
  - 8.31
 

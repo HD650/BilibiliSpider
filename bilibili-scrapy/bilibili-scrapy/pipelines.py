@@ -62,11 +62,9 @@ class VideoInfoPipeline(object):
         但是对于redis集群来说，如果item都存在一个key中，集群的意义就不存在了，我们应该把item的key分散在整个
         hash空间中，再通过一个单一的set容器来储存所有item的key"""
         key = self.item_key(item, spider)
-        item["update_time"] = datetime.datetime.now()
+        item["update_time"] = datetime.datetime.now().date()
         data = self.serialize(item)
-        changed = self.server.sadd(key, str(item["av"]))
-        if changed == 0:
-            print("crawled a duplicate video, there must be something wrong, av number: "+str(item['av']))
+        self.server.sadd(key, str(item["av"]))
         self.server.set(str(item["av"]), data)
         return item
 

@@ -56,6 +56,14 @@ if not REDIS_IS_CLUSTER:
 else:
     REDIS_CLUSTER_START_NODE = {'host': 'localhost', 'port': 7000}
 
+# 配置SQL数据库的入口
+SQL_HOST = 'localhost'
+SQL_PORT = 3306
+SQL_USER = 'root'
+SQL_PASSWORD = 'root'
+SQL_DATABASE = 'bilibili'
+SQL_TABLE = 'video'
+
 # 每个爬虫只从初始url池中拿取一个连接
 REDIS_START_URLS_BATCH_SIZE = 1
 
