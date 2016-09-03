@@ -10,6 +10,7 @@ class BilibiliVideo(Item):
     """需要记录的video的主要参数，item先辈存储在redis中，后被导入到sql中进行处理"""
     name = Field()
     av = Field()
+    url = Field()
     plays = Field()
     barrages = Field()
     coins = Field()

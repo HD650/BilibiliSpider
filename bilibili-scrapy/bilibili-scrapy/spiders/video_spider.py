@@ -3,8 +3,6 @@ from scrapy_redis.spiders import RedisCrawlSpider
 from scrapy.http import Request
 import urllib.request
 import json
-import time
-import datetime
 from scrapy import signals
 from rediscluster import StrictRedisCluster
 from scrapy_redis import connection
@@ -177,6 +175,7 @@ class VideoSpider(RedisCrawlSpider):
         else:
             av_num = raw_av[-1]
         item['av'] = av_num.lstrip("av")
+        item['url'] = response.url
         item['name'] = response.xpath("//div[@class='v-title']/h1/text()").extract()
         if item['name']:
             item['name'] = item['name'][0]
@@ -190,15 +189,12 @@ class VideoSpider(RedisCrawlSpider):
         if item['author']:
             item['author'] = item['author'][0]
         raw_url = "http://api.bilibili.com/archive_stat/stat?aid="+str(item['av'])+"&type=jsonp"
-        response = urllib.request.urlopen(raw_url, timeout=10)
-        raw_data = json.loads(response.read().decode("utf8"))
+        result = urllib.request.urlopen(raw_url, timeout=10)
+        raw_data = json.loads(result.read().decode("utf8"))
         item['plays'] = raw_data['data']['view']
         item['barrages'] = raw_data['data']['danmaku']
         item['coins'] = raw_data['data']['coin']
         item['replys'] = raw_data['data']['reply']
         item['favorites'] = raw_data['data']['favorite']
-        if len(item['author']) == 0:
-            # TODO: some item is empty, don't know why
-            print(response.body)
         yield item
 
