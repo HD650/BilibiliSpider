@@ -13,10 +13,15 @@ redis-py-cluster
 Basically, this project can run. ⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄  
 ## Changes##
 
+ - 9.3
+
+Started to manage the pages require login, haven't finished yet.        
+Started to implement a pipeline insert items directly to SQL database. (Performance of this pipeline still need to be tested)    
+
  - 9.2
 
-Now item_process.py can transfer all item in redis to SQL database which configured in settings.py.        
-Fix some format problem in datetime.   
+Now item_process.py can transfer all items in redis to SQL database which configured in settings.py.        
+Fix some format problems in datetime.   
 
  - 8.31
 
@@ -57,6 +62,8 @@ Fundamental code updated.
 Still have problems to crawl bangumi category videos in bangumi.bilibili.com.     
 Redis cluster doesn't support transaction, may cause some atomic problem.   
 Didn't test wether access to redis cluster faster than directly access to SQL database. (Some books and documents recommend to use redis but i haven't test this case yet)     
+Some page need login(the other way, cookies), but sending cookies require more work and bandwidth. Considering temporarily store all these pages and crawl them later.   
+Now, spiders can't update video data in redis since the dupefilter stops them to crawl the pages they have seen before.    
 ## Future ##
 Will add some code to analyse the data we crawled.  
 Analyse the age and gender of users who reply the popular videos.
@@ -78,6 +85,11 @@ redis-py-cluster
 ## 进度 ##
 该工程目前基本可以运行。⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄  
 ## 更改 ##
+
+ - 9.3
+
+开始处理需要登录的页面，暂时还不能处理。        
+开始实现一个直接把数据存入sql的管道。 (并不知道这样的性能如何)     
 
  - 9.2
 
@@ -121,7 +133,9 @@ redis的二进制执行文件已经上传。
 ## 问题(╯‵□′)╯︵┻━┻ 
 番剧分类还不能正常爬取。       
 Redis集群不支持事物，会造成一些原子性问题。  
-还未测试连接redis集群是否真的快于连接SQL数据库。(一些数据和文档推荐使用redis最为数据库，但是我还没有测试哪个更快)
+还未测试连接redis集群是否真的快于连接SQL数据库。(一些数据和文档推荐使用redis最为数据库，但是我还没有测试哪个更快)     
+有些页面需要登录才能访问（需要cookies），但是发送cookies需要额外的代码和带宽。暂时考虑把这些网页暂存起来之后统一爬取。  
+现在爬虫不能更新redis中的数据，因为dupefilter会阻止爬虫爬取之前见过的页面。    
 ## 未来计划 ##
 加入一些代码以分析爬取得到的数据。       
 对于高播放视频，分析其回复用户的注册年龄和性别。   

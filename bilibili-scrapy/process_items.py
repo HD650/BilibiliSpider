@@ -40,21 +40,21 @@ def get_cursor():
                           `id` int(11) NOT NULL,
                           `name` varchar(512) DEFAULT NULL,
                           `av` int(11) DEFAULT NULL,
-                          `author` varchar(128) DEFAULT NULL,
+                          `author` varchar(512) DEFAULT NULL,
                           `plays` int(11) DEFAULT NULL,
                           `barrages` int(11) DEFAULT NULL,
                           `coins` int(11) DEFAULT NULL,
-                          `update_time` datetime DEFAULT NULL,
-                          `update_time_short` date DEFAULT NULL,
-                          `category` varchar(45) DEFAULT NULL,
                           `favorites` int(11) DEFAULT NULL,
                           `replys` int(11) DEFAULT NULL,
+                          `category` varchar(512) DEFAULT NULL,
+                          `url` varchar(512) DEFAULT NULL,
+                          `update_time` datetime DEFAULT NULL,
+                          `update_time_short` date DEFAULT NULL,
                           `last_crawled` date DEFAULT NULL,
                           PRIMARY KEY (`id`),
                           KEY `date` (`update_time_short`),
                           KEY `author` (`author`),
-                          KEY `category` (`category`)
-                        ) ENGINE=InnoDB DEFAULT CHARSET=utf8;'''.format(table)
+                          KEY `category` (`category`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;'''.format(table)
     return cur, conn
 
 def get_safe_item(item):
@@ -69,18 +69,24 @@ def get_safe_item(item):
 
 def insert_data(buffer):
     """用于把buffer中的数据写入sql数据库内，buffer每积攒到一定数量的item，才会触发这个函数，缓解sql数据库的压力"""
-    cur, conn = get_cursor()
-    for i in range(0,len(buffer)):
-        temp = buffer.pop()
-        query = '''CALL {0}.insert_procedure'''.format(database)
-        query += '''({av},'{name}',{av},'{author}',{plays},{barrages},{coins},'{date}',
-        '{date_short}','{category}',{favorites},{replys},'{update_time}');'''.format_map(temp)
-        cur.execute(query)
-    print("Inserted {0} items!".format(str(i+1)))
-    conn.commit()
-    cur.close()
-    conn.close()
-    return buffer
+    try:
+        cur, conn = get_cursor()
+        for i in range(0,len(buffer)):
+            temp = buffer.pop()
+            query = '''CALL {0}.insert_procedure'''.format(database)
+            query += '''({av},'{name}',{av},'{author}',{plays},{barrages},{coins},'{date}',
+            '{date_short}','{category}',{favorites},{replys},'{update_time}','{url}');'''.format_map(temp)
+            cur.execute(query)
+        print("Inserted {0} items!".format(str(i+1)))
+        conn.commit()
+        cur.close()
+        conn.close()
+        return buffer
+    except Exception as err:
+        print("Error when inserting:"+str(err))
+        cur.close()
+        conn.close()
+        pass
 
 def process_items(r, key, limit=0, log_every=1000, wait=.1):
     """通关set容器访问到所有的av号，之后通过av号来访问redis中的数据将他们转存到sql中"""
@@ -112,9 +118,6 @@ def process_items(r, key, limit=0, log_every=1000, wait=.1):
             continue
 
         try:
-            if len(item.get('author')) is 0 and len(item.get('category')) is 0:
-                # TODO: some items are part empty, don't know why
-                continue
             date = time.strptime(item.get('date'), '%Y-%m-%d %H:%M')
             buffer.append({
                 'name' : item.get('name'),
@@ -164,9 +167,9 @@ def main():
         retcode = 0  # ok
     except KeyboardInterrupt:
         retcode = 0  # ok
-    except Exception(e):
-        print("Unhandled exception! ")
-        print(str(e))
+    except Exception as err:
+        print("Unhandled exception!\n")
+        print(str(err))
         retcode = 2
 
     return retcode
