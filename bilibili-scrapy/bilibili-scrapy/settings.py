@@ -40,7 +40,7 @@ else:
 
 # 使用pipeline将爬取的数据存入redis数据库中
 ITEM_PIPELINES = {
-    'bilibili-scrapy.pipelines.VideoInfoPipeline': 300,
+    'bilibili-scrapy.pipelines.RedisItemPipeline': 300,
     # 'scrapy_redis.pipelines.RedisPipeline': 400,
 }
 
@@ -69,4 +69,7 @@ REDIS_START_URLS_BATCH_SIZE = 1
 
 # 存储item的key，这个要改，以把key分散在hash池中
 REDIS_ITEMS_KEY = 'video_info'
+
+# 储存错误的item的key，错误item主要指需要登录的页面
+REDIS_ERROR_ITEMS_KEY = 'video_error'
 
