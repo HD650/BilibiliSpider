@@ -1,7 +1,9 @@
 # BilibiliSpider- ( ○’ω’○)つロ
 This project is used to crawl video information from [bilibili](http://www.bilibili.com/) damaku site such as amount of plays, favorites, coins and so on.     
-This project is developed base on the [scrapy-redis](https://github.com/rolando/scrapy-redis), a  distributed spider framework.  So you have to install [redis](http://redis.io/) database and [scrapy](https://github.com/scrapy/scrapy) before you run this project.   
-You can deploy this spider and the corresponding redis notes on several machines to speed up the crawling (maybe).
+This project is developed base on the [scrapy-redis](https://github.com/rolando/scrapy-redis), a  distributed spider framework.  So you have to install [redis](http://redis.io/) database and [scrapy](https://github.com/scrapy/scrapy) before you run this project.
+You can deploy this spider and the corresponding redis notes on several machines to speed up the crawling (maybe).   
+Some data analysis algorithms are involved, you can see more details here：   
+[Gradient descent](http://m.blog.csdn.net/article/details?id=51554910)is used to deduce whether the plays of some videos are in an rational extent. Now we use BGD.    
 ## Dependencies ##
 Pyhton 3.4  
 Ruby 2.x  
@@ -13,7 +15,11 @@ redis-py-cluster
 Basically, this project can run. ⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄  
 ## Changes##
 
- - 9.3
+ - 9.10
+
+Add a gradient descent framework, it will soon trained by data we crawled and do some deduction.      
+
+ - 9.3 (paused)
 
 Started to manage the pages require login, haven't finished yet.        
 Started to implement a pipeline insert items directly to SQL database. (Performance of this pipeline still need to be tested)    
@@ -75,6 +81,8 @@ Deploy a webserver to show all the data and analysis result.
 这个工程用于从[bilibili](http://www.bilibili.com/)弹幕网站爬取各个视频的信息，比如播放数，收藏数和硬币数。   
 这个工程基于[scrapy-redis](https://github.com/rolando/scrapy-redis)分布式爬虫框架开发，所以在使用这个工程之前需要先安装[redis](http://redis.io/)分布式数据库和[scrapy](https://github.com/scrapy/scrapy)框架。   
 你可以将该爬虫和对应的redis节点部署在不同机器上以提高爬取的速度（大概吧）。
+数据分析中涉及的一些算法可以在这里查看更多细节：   
+[梯度下降法](http://m.blog.csdn.net/article/details?id=51554910)用于估计up主的播放量是否正常，我们暂时使用批量梯度下降法。   
 ## 环境需求 ##
 Pyhton 3.4  
 Ruby 2.x  
@@ -86,7 +94,11 @@ redis-py-cluster
 该工程目前基本可以运行。⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄  
 ## 更改 ##
 
- - 9.3
+ - 9.10
+
+增加了一个梯度下降法的框架，很快会用爬取的数据训练他并且做一些预测。         
+
+ - 9.3（暂停）
 
 开始处理需要登录的页面，暂时还不能处理。        
 开始实现一个直接把数据存入sql的管道。 (并不知道这样的性能如何)     
