@@ -20,6 +20,10 @@ redis-py-cluster
 Basically, this project can run. ⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄  
 ## Changes##
 
+ - 9.12
+
+Add a script using BGD algorithm to deduct plays of video, it's no accurate yet since we didn't consider the popularities of authors.         
+
  - 9.10
 
 Add a gradient descent framework, it will soon trained by data we crawled and do some deductions.      
@@ -70,12 +74,14 @@ Redis binaries updated.
 
 Fundamental code updated.   
 ## Problem(╯‵□′)╯︵┻━┻ ##
+Redis cluster sometimes breaks down and can't be fixed up.   
 Still have problems to crawl bangumi category videos in bangumi.bilibili.com.     
 Redis cluster doesn't support transaction, may causes some atomic problems.   
 Didn't test wether accessing to redis cluster faster than directly accessing to SQL database. (Some books and documents recommend to use redis but i haven't test this case yet)     
 Some pages need login(the other way, cookies), but sending cookies require more codes and bandwidth. I'm considering temporarily store all these pages and crawl them later.   
 Now, spiders can't update video data in redis since the dupefilter stops them to crawl the pages they have seen before.    
 ## Future ##
+We need some fileds to record the popularities of authors.   
 Will add some code to analyse the data we crawled.  
 Analyse the age and gender of users who reply the popular videos.
 One script to start the whole project easily.   
@@ -100,6 +106,10 @@ redis-py-cluster
 ## 进度 ##
 该工程目前基本可以运行。⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄  
 ## 更改 ##
+
+ - 9.12
+
+增加了一个使用BGD的脚本来预测播放量，现在还不够准确因为我们还没有考虑视频up主的热度。    
 
  - 9.10
 
@@ -150,12 +160,14 @@ redis的二进制执行文件已经上传。
 
 基础代码上传。   
 ## 问题(╯‵□′)╯︵┻━┻ 
+Redis集群有时会崩溃且不能修复。   
 番剧分类还不能正常爬取。       
 Redis集群不支持事物，会造成一些原子性问题。  
 还未测试连接redis集群是否真的快于连接SQL数据库。(一些数据和文档推荐使用redis最为数据库，但是我还没有测试哪个更快)     
 有些页面需要登录才能访问（需要cookies），但是发送cookies需要额外的代码和带宽。暂时考虑把这些网页暂存起来之后统一爬取。  
 现在爬虫不能更新redis中的数据，因为dupefilter会阻止爬虫爬取之前见过的页面。    
 ## 未来计划 ##
+需要一些字段记录视频up主的热度。   
 加入一些代码以分析爬取得到的数据。       
 对于高播放视频，分析其回复用户的注册年龄和性别。   
 通过一个脚本运行全部的工程。  
