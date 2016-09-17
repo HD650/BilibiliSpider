@@ -22,6 +22,7 @@ password = settings.SQL_PASSWORD
 database = settings.SQL_DATABASE
 table = settings.SQL_TABLE
 
+
 def get_cursor():
     """通过settings的配置，链接到SQL数据库，通过cursor写入数据"""
     global first_connection
@@ -57,6 +58,7 @@ def get_cursor():
                           KEY `category` (`category`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;'''.format(table)
     return cur, conn
 
+
 def get_safe_item(item):
     """因为拼接sql时使用了单引号，item中的字符串不能出现单引号，将所有单引号转义为双引号"""
     if item['author'].find("'") is not -1:
@@ -66,6 +68,7 @@ def get_safe_item(item):
     if item['category'].find("'") is not -1:
         item['category'] = item['category'].replace("'",'''"''')
     return item
+
 
 def insert_data(buffer):
     """用于把buffer中的数据写入sql数据库内，buffer每积攒到一定数量的item，才会触发这个函数，缓解sql数据库的压力"""
@@ -87,6 +90,7 @@ def insert_data(buffer):
         cur.close()
         conn.close()
         pass
+
 
 def process_items(r, key, limit=0, log_every=1000, wait=.1):
     """通关set容器访问到所有的av号，之后通过av号来访问redis中的数据将他们转存到sql中"""
@@ -144,7 +148,6 @@ def process_items(r, key, limit=0, log_every=1000, wait=.1):
             insert_data(buffer)
             buffer = list()
             print("Inserting finished!")
-
 
 
 def main():
