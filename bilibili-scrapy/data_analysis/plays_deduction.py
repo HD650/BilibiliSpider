@@ -22,20 +22,29 @@ if __name__ == '__main__':
     for i, categorie in enumerate(categories):
         print(str(i)+' : '+str(categorie))
     i = int(input())
-    categorie = categories[i][0]
-    print(str(categorie)+' is selected!')
-    # 取出所有的视频信息，其中弹幕数，硬币数，收藏数和回复数作为features，播放数作为target(分类应该提前分好)
-    videoinfo_query = '''SELECT barrages,coins,favorites,replys,plays
-                          FROM {0} WHERE category='{1}';'''.format(table, categorie)
+    if i < len(categories):
+        categorie = categories[i][0]
+        print(str(categorie)+' is selected!')
+        # 取出所有的视频信息，其中弹幕数，硬币数，收藏数和回复数作为features，播放数作为target(分类应该提前分好)
+        videoinfo_query = '''SELECT barrages,coins,favorites,replys,plays
+                              FROM {0} WHERE category='{1}';'''.format(table, categorie)
+        # 播放量是所有数据中单位最大的，我们使用最大播放量来把所有数据归一化
+        max_query = '''SELECT plays FROM {0} WHERE category='{1}' ORDER BY plays DESC LIMIT 0,1;'''.format(table, categorie)
+        cur.execute(max_query)
+        # 所有数据归一化为0~100的值，防止迭代中出现无穷
+        max_plays = cur.fetchone()[0]/100
+        print('normalized by '+str(max_plays))
+    else:
+        print('no category selected!')
+        videoinfo_query = '''SELECT barrages,coins,favorites,replys,plays
+                              FROM {0};'''.format(table)
+        max_query = '''SELECT plays FROM {0} ORDER BY plays DESC LIMIT 0,1;'''.format(table)
+        cur.execute(max_query)
+        max_plays = cur.fetchone()[0]/100
+        print('normalized by '+str(max_plays))
     cur.execute(videoinfo_query)
     video_info = cur.fetchall()
     print(str(len(video_info))+' samples are found!')
-    # 播放量是所有数据中单位最大的，我们使用最大播放量来把所有数据归一化
-    max_query = '''SELECT plays FROM {0} WHERE category='{1}' ORDER BY plays DESC LIMIT 0,1;'''.format(table, categorie)
-    cur.execute(max_query)
-    # 所有数据归一化为0~100的值，防止迭代中出现无穷
-    max_plays = cur.fetchone()[0]/100
-    print('normalized by '+str(max_plays))
     sample_x = list()
     sample_y = list()
 

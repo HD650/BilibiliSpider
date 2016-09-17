@@ -1,13 +1,24 @@
 # BilibiliSpider- ( ○’ω’○)つロ
-This project is used to crawl video information from [bilibili](http://www.bilibili.com/) damaku site such as amount of plays, favorites, coins and so on.     
-This project is developed base on the [scrapy-redis](https://github.com/rolando/scrapy-redis), a  distributed spider framework.  So you have to install [redis](http://redis.io/) database and [scrapy](https://github.com/scrapy/scrapy) before you run this project.
-You can deploy this spider and the corresponding redis notes on several machines to speed up the crawling (maybe).   
-Some data analysis algorithms are involved, you can see more details here：   
+This project is used to crawl, represent and analyse video information from [bilibili](http://www.bilibili.com/) damaku site such as amount of plays, favorites, coins and so on.     
+## Framework##
 
- 1. [Gradient
-    descent](http://m.blog.csdn.net/article/details?id=51554910) is used
-    to deduce whether the plays of some videos are in an rational
-    extent. Now we use BGD.
+ 1. The spider of this project is developed base on the
+    [scrapy-redis](https://github.com/rolando/scrapy-redis), a 
+    distributed spider framework.  So you have to install
+    [redis](http://redis.io/) database and
+    [scrapy](https://github.com/scrapy/scrapy) before you run this
+    project.    You can deploy this spider and the corresponding redis
+    notes on several machines to speed up the crawling (maybe).
+ 2. The representation part of this project is developed base on the
+    [matplotlib](https://github.com/matplotlib/matplotlib), a python
+    plotting library.   
+ 3. Some data analysis algorithms and libraries are involved, you can
+    see more details
+        here：    
+        [Gradient
+            descent](http://m.blog.csdn.net/article/details?id=51554910) is used
+            to deduce whether the plays of some videos are in an rational
+            extent. Now we use BGD.
 
 ## Dependencies ##
 Pyhton 3.4  
@@ -15,14 +26,20 @@ Ruby 2.x
 scarpy  
 scrapy-redis  
 redis-py  
-redis-py-cluster  
+redis-py-cluster   
+matplotlib   
+pymysql   
 ## Progress ##
 Basically, this project can run. ⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄  
 ## Changes##
 
+ - 9.17
+
+Add a scirpt to represent video information in 3D plot, it has some performance problem. (very slow when drawing thousands of points)    
+
  - 9.12
 
-Add a script using BGD algorithm to deduct plays of video, it's no accurate yet since we didn't consider the popularities of authors.         
+Add a script using BGD algorithm to deduct plays of video, it's no accurate yet since we didn't consider the popularities of authors. (lso, these features are not precisely fit in a linear function)         
 
  - 9.10
 
@@ -80,6 +97,7 @@ Redis cluster doesn't support transaction, may causes some atomic problems.
 Didn't test wether accessing to redis cluster faster than directly accessing to SQL database. (Some books and documents recommend to use redis but i haven't test this case yet)     
 Some pages need login(the other way, cookies), but sending cookies require more codes and bandwidth. I'm considering temporarily store all these pages and crawl them later.   
 Now, spiders can't update video data in redis since the dupefilter stops them to crawl the pages they have seen before.    
+Had test a long term crawling but when crawling finished, we didn't go through all pages we want. (only crawled 900000  pages but there were approximate 10000000 pages)   
 ## Future ##
 We need some fileds to record the popularities of authors.   
 Will add some code to analyse the data we crawled.  
@@ -89,12 +107,14 @@ Deploy a webserver to show all the data and analysis result.
   
 
 # B站爬虫- ( ○’ω’○)つロ
-这个工程用于从[bilibili](http://www.bilibili.com/)弹幕网站爬取各个视频的信息，比如播放数，收藏数和硬币数。   
-这个工程基于[scrapy-redis](https://github.com/rolando/scrapy-redis)分布式爬虫框架开发，所以在使用这个工程之前需要先安装[redis](http://redis.io/)分布式数据库和[scrapy](https://github.com/scrapy/scrapy)框架。   
-你可以将该爬虫和对应的redis节点部署在不同机器上以提高爬取的速度（大概吧）。   
-数据分析中涉及的一些算法可以在这里查看更多细节：   
+这个工程用于从[bilibili](http://www.bilibili.com/)弹幕网站爬取、展示和分析各个视频的信息，比如播放数，收藏数和硬币数。   
+## 框架 ##
 
- 1. [梯度下降法](http://m.blog.csdn.net/article/details?id=51554910)用于估计up主的播放量是否正常，我们暂时使用批量梯度下降法。
+ 1. 这个工程的爬虫部分基于[scrapy-redis](https://github.com/rolando/scrapy-redis)分布式爬虫框架开发，所以在使用这个工程之前需要先安装[redis](http://redis.io/)分布式数据库和[scrapy](https://github.com/scrapy/scrapy)框架。
+    你可以将该爬虫和对应的redis节点部署在不同机器上以提高爬取的速度（大概吧）。
+ 2. 这个工程中的可视化部分基于[matplotlib](https://github.com/matplotlib/matplotlib)开发，这是一个python的数学作图库。   
+ 3. 数据分析中涉及的一些算法可以在这里查看更多细节：     
+    [梯度下降法](http://m.blog.csdn.net/article/details?id=51554910)用于估计up主的播放量是否正常，我们暂时使用批量梯度下降法。
 
 ## 环境需求 ##
 Pyhton 3.4  
@@ -103,13 +123,19 @@ scarpy
 scrapy-redis  
 redis-py  
 redis-py-cluster   
+matplotlib   
+pymysql   
 ## 进度 ##
 该工程目前基本可以运行。⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄  
 ## 更改 ##
 
+ - 9.17
+
+增加了脚本以绘制视频信息的3D图表，还存在一些性能问题。（有上千个点的时候非常慢）     
+
  - 9.12
 
-增加了一个使用BGD的脚本来预测播放量，现在还不够准确因为我们还没有考虑视频up主的热度。    
+增加了一个使用BGD的脚本来预测播放量，现在还不够准确因为我们还没有考虑视频up主的热度。（同时，这些特征也不准确符合线性关系）    
 
  - 9.10
 
@@ -165,7 +191,8 @@ Redis集群有时会崩溃且不能修复。
 Redis集群不支持事物，会造成一些原子性问题。  
 还未测试连接redis集群是否真的快于连接SQL数据库。(一些数据和文档推荐使用redis最为数据库，但是我还没有测试哪个更快)     
 有些页面需要登录才能访问（需要cookies），但是发送cookies需要额外的代码和带宽。暂时考虑把这些网页暂存起来之后统一爬取。  
-现在爬虫不能更新redis中的数据，因为dupefilter会阻止爬虫爬取之前见过的页面。    
+现在爬虫不能更新redis中的数据，因为dupefilter会阻止爬虫爬取之前见过的页面。   
+试验了一次长时间爬取，爬取结束时并没有爬取到所有预计的页面。（爬取了90w页面，但是估计有1000w页面左右）    
 ## 未来计划 ##
 需要一些字段记录视频up主的热度。   
 加入一些代码以分析爬取得到的数据。       

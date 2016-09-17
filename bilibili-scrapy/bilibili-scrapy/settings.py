@@ -15,7 +15,7 @@ SPIDER_MODULES = ['bilibili-scrapy.spiders']
 NEWSPIDER_MODULE = 'bilibili-scrapy.spiders'
 
 # 设置是否使用redis的集群模式
-REDIS_IS_CLUSTER = True
+REDIS_IS_CLUSTER = False
 
 # 伪装成浏览器
 USER_AGENT = 'Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) ' \
@@ -51,8 +51,8 @@ DOWNLOAD_DELAY = 1
 
 # 配置我们的redis集群的入口，事实上只要一个结点就可以连接到整个集群
 if not REDIS_IS_CLUSTER:
-    REDIS_HOST = 'localhost'
-    REDIS_PORT = 6379
+    REDIS_HOST = '192.168.253.1'
+    REDIS_PORT = 7000
 else:
     REDIS_CLUSTER_START_NODE = {'host': 'localhost', 'port': 7000}
 
