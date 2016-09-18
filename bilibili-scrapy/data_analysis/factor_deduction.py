@@ -1,7 +1,5 @@
-# 暂时只是个demo，我们通过线性回归可以判断硬币，收藏，评论，up主关注度这几个自变量和因变量播放数的关系，从而推断up的视频
-# 播放量是否正常（我们假设这几个数据之间是线性关系）
-# from now, this is a demo, we can deduce the number of plays from the information of coins, favorites and replys
-# (now, we assume these features fit in a linear regression)
+# 暂时只是个demo，我们通过线性回归可以判断硬币，收藏，评论，up主关注度这几个自变量和因变量播放数的关系，从而推断视频热度
+# 中 play，barrage，favorite和reply的大致比值
 
 from data_analysis.linear_regression import bgd
 from data_analysis.process_items import get_cursor
@@ -15,12 +13,12 @@ if __name__ == '__main__':
     table = settings.SQL_TABLE
     cur, conn = get_cursor()
     # 取出所有分类，我们认为分类会影响播放量
-    category_query = '''SELECT category FROM {0} GROUP BY category ORDER BY category;'''.format(table)
+    category_query = '''SELECT category,count(1) FROM {0} GROUP BY category ORDER BY category;'''.format(table)
     cur.execute(category_query)
     categories = cur.fetchall()
     print('Please choose one category:')
-    for i, categorie in enumerate(categories):
-        print(str(i)+' : '+str(categorie))
+    for i, category in enumerate(categories):
+        print(str(i)+' : '+str(category[0])+' , '+str(category[1]))
     i = int(input())
     if i < len(categories):
         categorie = categories[i][0]
