@@ -1,4 +1,4 @@
-CREATE DEFINER=`root`@`localhost` PROCEDURE `insert_procedure`(IN id int(11),
+CREATE DEFINER=`root`@`%` PROCEDURE `insert_procedure`(IN id int(11),
 								  name varchar(512),
 								  av int(11),
 								  author varchar(512),

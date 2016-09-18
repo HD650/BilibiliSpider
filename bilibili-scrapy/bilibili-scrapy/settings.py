@@ -51,7 +51,7 @@ DOWNLOAD_DELAY = 1
 
 # 配置我们的redis集群的入口，事实上只要一个结点就可以连接到整个集群
 if not REDIS_IS_CLUSTER:
-    REDIS_HOST = '192.168.253.1'
+    REDIS_HOST = '192.168.253.2'
     REDIS_PORT = 7000
 else:
     REDIS_CLUSTER_START_NODE = {'host': 'localhost', 'port': 7000}

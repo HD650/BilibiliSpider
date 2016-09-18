@@ -56,6 +56,8 @@ def get_cursor():
                           KEY `date` (`update_time_short`),
                           KEY `author` (`author`),
                           KEY `category` (`category`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;'''.format(table)
+            cur.execute(query)
+            conn.commit()
     return cur, conn
 
 
