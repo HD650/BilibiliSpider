@@ -1,14 +1,24 @@
 # 使用梯度下降法求线性回归，这里提供批量梯度下降法BGD，未来提供随机梯度下降发SGD
+import numpy
 
-# 测试数据与代码 test data and code
-# sample_x = [(1, 0., 3), (1, 1., 3), (1, 2., 3), (1, 3., 2), (1, 4., 4)]
-# sample_y = [95.364, 97.217205, 75.195834, 60.105519, 49.342380]
-#
-# theta0 = 0
-# theta1 = 0
-# theta2 = 0
-# if __name__ == '__main__':
-#     bgd([0, 0, 0], sample_x, sample_y, 1000000)
+# Locally weighted least squares revisited
+def lwlr(testPoint, xArr, yArr, k=1.0):
+    """局部加权线性回归方法，摘自 www.manning.com/MachineLearninginAction
+    这种算法优于梯度下降发的地方在于对于局部线性的数据拟合更好,对于视频信息，不同热度区间的视频确实符合不同的线性模型"""
+    xMat = numpy.matrix(xArr)
+    yMat = numpy.matrix(yArr).T
+    # 获得样本的数量
+    m = xMat.shape[0]
+    weights = numpy.matrix(numpy.eye(m))
+    for j in range(m):
+        diff_mat = testPoint - xMat[j, :]
+        weights[j, j] = numpy.exp(diff_mat*diff_mat.T/(-2.0*k**2))
+    temp = xMat.T * (weights * xMat)
+    if numpy.linalg.det(temp) == 0.0:
+        print("矩阵不可逆！")
+        return
+    ws = temp.I * (xMat.T * (weights * yMat))
+    return ws
 
 
 def bgd(theta, sample_x, sample_y, max_count=999999, alpha=0.05):
@@ -74,3 +84,47 @@ def bgd(theta, sample_x, sample_y, max_count=999999, alpha=0.05):
             return theta, error, count
 
 
+# 测试数据与代码 test data and code
+sample_x = [(1, 1), (2, 1), (3, 1), (4, 1), (5, 1)]
+sample_y = [2, 3, 6, 8, 10]
+
+theta0 = 0
+theta1 = 0
+theta2 = 0
+
+# 梯度下降法的测试
+# if __name__ == '__main__':
+#     import matplotlib.pyplot as plt
+#     theta, error, count = bgd([0, 0], sample_x, sample_y, 1000000)
+#     x_draw = list()
+#     for one in sample_x:
+#         x_draw.append(one[:-1])
+#     x = numpy.matrix(sample_x)
+#     y = numpy.array(sample_y)
+#     theta = numpy.matrix(theta)
+#     predict_y = x*theta.T
+#     fig = plt.figure()
+#     ax = fig.add_subplot(111)
+#     ax.plot(x_draw, predict_y)
+#     ax.scatter(x_draw, y, s=2, c='red')
+#     plt.show()
+
+# 局部加权回归测试，通过调整k，从1到0.2，可以看到拟合越来越好
+if __name__ == '__main__':
+    import matplotlib.pyplot as plt
+    x_draw = list()
+    predict_y = list()
+    for one in sample_x:
+        x_draw.append(one[:-1])
+        w = lwlr(one[:-1], sample_x, sample_y, 0.2)
+        temp = numpy.matrix(one)*w
+        temp = temp.max()
+        predict_y.append(temp)
+        numpy.matrix.data
+    y = numpy.array(sample_y)
+    predict_y = numpy.array(predict_y)
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ax.plot(x_draw, predict_y)
+    ax.scatter(x_draw, y, s=2, c='red')
+    plt.show()
