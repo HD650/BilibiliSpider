@@ -18,7 +18,8 @@ This project is used to crawl, represent and analyse video information from [bil
         [Gradient
             descent](http://m.blog.csdn.net/article/details?id=51554910) is used
             to deduce whether the plays of some videos are in an rational
-            extent. Now we use BGD.
+            extent. Now we use BGD.   
+ 4. The tokenizer is developed based on [jieba](https://github.com/fxsjy/jieba), a chinese text segmentation library. And add some special terms used in bilibili.     
 
 ## Dependencies ##
 Pyhton 3.4  
@@ -29,9 +30,14 @@ redis-py
 redis-py-cluster   
 matplotlib   
 pymysql   
+jieba   
 ## Progress ##
 Basically, this project can run. ⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄  
 ## Changes##
+
+ - 9.18
+
+Add a scirpt to tokenize the name of videos, this will help us to find the most popular words in bilibili.       
 
  - 9.17
 
@@ -43,7 +49,7 @@ Add a script using BGD algorithm to deduct plays of video, it's no accurate yet 
 
  - 9.10
 
-Add a gradient descent framework, it will soon trained by data we crawled and do some deductions.      
+Add a gradient descent framework, it will soon trained by data we crawled and to deduct the proportion of plays, coins and favorites.      
 
  - 9.3 (paused)
 
@@ -114,7 +120,8 @@ Deploy a webserver to show all the data and analysis result.
     你可以将该爬虫和对应的redis节点部署在不同机器上以提高爬取的速度（大概吧）。
  2. 这个工程中的可视化部分基于[matplotlib](https://github.com/matplotlib/matplotlib)开发，这是一个python的数学作图库。   
  3. 数据分析中涉及的一些算法可以在这里查看更多细节：     
-    [梯度下降法](http://m.blog.csdn.net/article/details?id=51554910)用于估计up主的播放量是否正常，我们暂时使用批量梯度下降法。
+    [梯度下降法](http://m.blog.csdn.net/article/details?id=51554910)用于估计up主的播放量是否正常，我们暂时使用批量梯度下降法。  
+4. 分词系统基于[jieba](https://github.com/fxsjy/jieba)中文分词系统，添加了一些bilibili中常用的术语。        
 
 ## 环境需求 ##
 Pyhton 3.4  
@@ -125,9 +132,14 @@ redis-py
 redis-py-cluster   
 matplotlib   
 pymysql   
+jieba   
 ## 进度 ##
 该工程目前基本可以运行。⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄  
 ## 更改 ##
+
+ - 9.18
+
+增加了一个对视频名字分词的脚本，这个会帮助我们分析bilibili中最受欢迎的词。       
 
  - 9.17
 
@@ -139,7 +151,7 @@ pymysql
 
  - 9.10
 
-增加了一个梯度下降法的框架，很快会用爬取的数据训练他并且做一些预测。         
+增加了一个梯度下降法的框架，使用他来迭代出播放、硬币、收藏等等参数的比例关系。         
 
  - 9.3（暂停）
 
