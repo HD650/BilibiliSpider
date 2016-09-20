@@ -32,8 +32,16 @@ matplotlib
 pymysql   
 jieba   
 ## Progress ##
-Basically, this project can run. ⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄  
+Basically, this project can run. ⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄    
+Crawled 900 thousand of video info from game category by 10 instances of spider and 2 day period.
+Represented video info spider crawled with 3d plot which help us to have a better view of video info.      
+Deducted the play amount of video by locally weighted regression algorithm trained by samples spider crawled,the result is basically accurate.    
 ## Changes##
+
+ - 9.18
+
+Add locally weighted regression algorithm that fit the samples better in a little scale.       
+Add sql file which contains some video info samples crawled from game category of bilibili.     
 
  - 9.18
 
@@ -134,8 +142,16 @@ matplotlib
 pymysql   
 jieba   
 ## 进度 ##
-该工程目前基本可以运行。⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄  
+该工程目前基本可以运行。⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄   
+使用10个爬虫实例和2天时间爬取了90万条游戏分类的视频信息样本。
+通过做出视频信息样本的3d图标，给我们提供了宏观分析数据的视图。      
+使用样本训练局部权重回归算法，并用它预测视频的播放量，其结果基本正确。    
 ## 更改 ##
+
+ - 9.18
+
+增加了局部权重回归算法，这个算法在小范围内更能符合样本。       
+增加了包含视频信息样本的sql文件，视频信息样本爬取自bilibili的游戏区。     
 
  - 9.18
 
