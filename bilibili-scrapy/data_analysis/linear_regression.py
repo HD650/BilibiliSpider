@@ -1,15 +1,15 @@
-# 使用梯度下降法求线性回归，这里提供批量梯度下降法BGD，未来提供随机梯度下降发SGD
 import numpy
 
 # Locally weighted least squares revisited
 def lwlr(testPoint, xArr, yArr, k=1.0):
     """局部加权线性回归方法，摘自 www.manning.com/MachineLearninginAction
     这种算法优于梯度下降发的地方在于对于局部线性的数据拟合更好,对于视频信息，不同热度区间的视频确实符合不同的线性模型
-    该算法的主要参数是k，小k会导致真正进行训练的样本点过少，而k过大则会有大量远距离的样本点影响局部的线性关系"""
+    该算法的主要参数是k，小k会导致真正进行训练的样本点过少甚至没有报错，而k过大则会有大量远距离的样本点影响局部的线性关系"""
     xMat = numpy.matrix(xArr)
     yMat = numpy.matrix(yArr).T
     # 获得样本的数量
     m = xMat.shape[0]
+    # TODO 更改矩阵为数组，不然内存溢出，或者减少样本的输入
     weights = numpy.matrix(numpy.eye(m))
     for j in range(m):
         diff_mat = testPoint - xMat[j, :]
@@ -110,14 +110,14 @@ theta2 = 0
 #     ax.scatter(x_draw, y, s=2, c='red')
 #     plt.show()
 
-# 局部加权回归测试，通过调整k，从1到0.2，可以看到拟合越来越好
+# 局部加权回归测试，通过调整k，从1到0.2，可以看到拟合越来越好，但是要注意过拟合
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
     x_draw = list()
     predict_y = list()
     for one in sample_x:
         x_draw.append(one[:-1])
-        w = lwlr(one[:-1], sample_x, sample_y, 0.2)
+        w = lwlr(one, sample_x, sample_y, 0.2)
         temp = numpy.matrix(one)*w
         temp = temp.max()
         predict_y.append(temp)
