@@ -16,9 +16,9 @@ This project is used to crawl, represent and analyse video information from [bil
     see more details
         here：    
         [Gradient
-            descent](http://m.blog.csdn.net/article/details?id=51554910) is used
-            to deduce whether the plays of some videos are in an rational
-            extent. Now we use BGD.   
+            descent linear regression](http://m.blog.csdn.net/article/details?id=51554910) is used
+            to deduce the ratio of plays, coins, favorites and replys. But it seems these features do not fit in a linear function.        
+        [Locally weighted linear regression](http://www.cnblogs.com/MrLJC/p/4147697.html) is used to deduce plays of a video with some video samples close to it.    
  4. The tokenizer is developed based on [jieba](https://github.com/fxsjy/jieba), a chinese text segmentation library. And add some special terms used in bilibili.     
 
 ## Dependencies ##
@@ -33,14 +33,15 @@ pymysql
 jieba   
 ## Progress ##
 Basically, this project can run. ⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄    
-Crawled 900 thousand of video info from game category by 10 instances of spider and 2 day period.
-Represented video info spider crawled with 3d plot which help us to have a better view of video info.      
-Deducted the play amount of video by locally weighted regression algorithm trained by samples spider crawled, some results have large error.    
+Crawled 900 thousand of video info from game category by 10 instances of spider and 2 days period.
+Represented video info with 3d plot which help us to have a better view of the whole samples.      
+Deducted the play amount of video by locally weighted regression algorithm trained by samples spider crawled, some results have large error but some work well.    
 ## Changes##
 
  - 9.21
 
-Add code to calculate the error of locally weighted regression, so we can choose a best value of k. But the eroor is still large.          
+Add code to calculate the error of locally weighted regression, so we can choose a best value of k.    
+Add constant term which is forgot in previous commits. It helps to decrease the error, but in some cases, the error is still large.           
 
  - 9.18
 
@@ -116,7 +117,7 @@ Didn't test wether accessing to redis cluster faster than directly accessing to 
 Some pages need login(the other way, cookies), but sending cookies require more codes and bandwidth. I'm considering temporarily store all these pages and crawl them later.   
 Now, spiders can't update video data in redis since the dupefilter stops them to crawl the pages they have seen before.    
 Had test a long term crawling but when crawling finished, we didn't go through all pages we want. (only crawled 900000  pages but there were approximate 10000000 pages)    
-Error of locall weighted regression is large, maybe we need some non-linear model.   
+In some cases, error of locall weighted regression is large, and in some cases, samples are insufficient, maybe we need some kind of non-linear model.    
 ## Future ##
 We need some fileds to record the popularities of authors.   
 Will add some code to analyse the data we crawled.  
@@ -133,7 +134,8 @@ Deploy a webserver to show all the data and analysis result.
     你可以将该爬虫和对应的redis节点部署在不同机器上以提高爬取的速度（大概吧）。
  2. 这个工程中的可视化部分基于[matplotlib](https://github.com/matplotlib/matplotlib)开发，这是一个python的数学作图库。   
  3. 数据分析中涉及的一些算法可以在这里查看更多细节：     
-    [梯度下降法](http://m.blog.csdn.net/article/details?id=51554910)用于估计up主的播放量是否正常，我们暂时使用批量梯度下降法。  
+    [梯度下降法](http://m.blog.csdn.net/article/details?id=51554910)用于估计播放、硬币、收藏、回复的比值，但是看起来这几个特性不不符合线性关系。   
+    [局部权重线性回归](http://www.cnblogs.com/MrLJC/p/4147697.html)被用于估计视频的播放量，这个算法使用和目标视频相近的样本点来估计。    
 4. 分词系统基于[jieba](https://github.com/fxsjy/jieba)中文分词系统，添加了一些bilibili中常用的术语。        
 
 ## 环境需求 ##
@@ -150,12 +152,13 @@ jieba
 该工程目前基本可以运行。⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄   
 使用10个爬虫实例和2天时间爬取了90万条游戏分类的视频信息样本。
 通过做出视频信息样本的3d图标，给我们提供了宏观分析数据的视图。      
-使用样本训练局部权重回归算法，并用它预测视频的播放量，某些样本点误差很大。    
+使用样本训练局部权重回归算法，并用它预测视频的播放量，某些样本点误差很大，某些估计良好。    
 ## 更改 ##
 
  - 9.21
 
-增加了计算局部权重回归误差的代码，这样可以让我们选择最好的k值，但是这样误差依旧很大。          
+增加了计算局部权重回归误差的代码，这样可以让我们选择最好的k值。   
+增加了前几个提交忘记加了的常数项，这会使误差减小，但是某些情况下，误差依旧很大。   
 
  - 9.18
 
@@ -230,7 +233,7 @@ Redis集群不支持事物，会造成一些原子性问题。
 有些页面需要登录才能访问（需要cookies），但是发送cookies需要额外的代码和带宽。暂时考虑把这些网页暂存起来之后统一爬取。  
 现在爬虫不能更新redis中的数据，因为dupefilter会阻止爬虫爬取之前见过的页面。   
 试验了一次长时间爬取，爬取结束时并没有爬取到所有预计的页面。（爬取了90w页面，但是估计有1000w页面左右）    
-局部权重回归算法的结果依旧误差很大，我们可能要尝试非线性模型。   
+局部权重回归算法的某些结果依旧误差很大，某些预测的样本不足，我们可能要尝试非线性模型。   
 ## 未来计划 ##
 需要一些字段记录视频up主的热度。   
 加入一些代码以分析爬取得到的数据。       
