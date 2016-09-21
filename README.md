@@ -136,7 +136,7 @@ Deploy a webserver to show all the data and analysis result.
  3. 数据分析中涉及的一些算法可以在这里查看更多细节：     
     [梯度下降法](http://m.blog.csdn.net/article/details?id=51554910)用于估计播放、硬币、收藏、回复的比值，但是看起来这几个特性不不符合线性关系。   
     [局部权重线性回归](http://www.cnblogs.com/MrLJC/p/4147697.html)被用于估计视频的播放量，这个算法使用和目标视频相近的样本点来估计。    
-4. 分词系统基于[jieba](https://github.com/fxsjy/jieba)中文分词系统，添加了一些bilibili中常用的术语。        
+ 4. 分词系统基于[jieba](https://github.com/fxsjy/jieba)中文分词系统，添加了一些bilibili中常用的术语。        
 
 ## 环境需求 ##
 Pyhton 3.4  
