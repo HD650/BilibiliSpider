@@ -4,7 +4,8 @@ import numpy
 # Locally weighted least squares revisited
 def lwlr(testPoint, xArr, yArr, k=1.0):
     """局部加权线性回归方法，摘自 www.manning.com/MachineLearninginAction
-    这种算法优于梯度下降发的地方在于对于局部线性的数据拟合更好,对于视频信息，不同热度区间的视频确实符合不同的线性模型"""
+    这种算法优于梯度下降发的地方在于对于局部线性的数据拟合更好,对于视频信息，不同热度区间的视频确实符合不同的线性模型
+    该算法的主要参数是k，小k会导致真正进行训练的样本点过少，而k过大则会有大量远距离的样本点影响局部的线性关系"""
     xMat = numpy.matrix(xArr)
     yMat = numpy.matrix(yArr).T
     # 获得样本的数量

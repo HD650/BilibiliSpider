@@ -9,6 +9,27 @@ sys.path.append(r'.\bilibili-scrapy')
 sys.path.append(r'..')
 import settings
 
+
+def test_k(sample_x, sample_y):
+    """测试使用不同feature和不同k情况下的误差，目前使用coins和favorites比较好，k应取0.15到0.25"""
+    samples = len(sample_x)
+    test_sample_x = list()
+    test_sample_y = list()
+    for i in range(0, samples, 1000):
+        test_sample_x.append(sample_x.pop(i))
+        test_sample_y.append(sample_y.pop(i))
+    for k in (0.05, 0.10, 0.02):
+        print('now k is: '+str(k))
+        error = 0
+        for i in range(20):
+            result = lwlr(test_sample_x[i], sample_x, sample_y, k)
+            result = [test_sample_x[i][0], test_sample_x[i][1]]*result
+            print('result: {0}  sample: {1}'.format(result[0, 0], sample_y[i]))
+            error += (result[0, 0]-sample_y[i])/sample_y[i]
+        print('error: '+str(error/20))
+        print()
+        print()
+
 if __name__ == '__main__':
     video_info = read_video_info()
     sample_x = list()
@@ -35,20 +56,23 @@ if __name__ == '__main__':
     #     # 送bgd进行迭代
     #     bgd(theta, sample_x, sample_y, 10000000, 1.0)
 
-    # 采用局部权重的线性回归，同时仅仅考虑单一分类下的coins,favorites对plays的影响，拟合效果良好
+    # 采用局部权重的线性回归，同时仅仅考虑单一分类下的coins,favorites对plays的影响
     category = ''
     for key in video_info:
         category = key
+    draw_plays_favorites_coins_3d(video_info[category])
     for item in video_info[category]:
-        sample_x.append([item[1]/100, item[2]/100])
-        sample_y.append(item[3]/10000)
+        sample_x.append([item[0]/10, item[1]/10])
+        sample_y.append(item[3]/100)
     print('need a approximate coins and favorites to predicate')
     print('enter coins:')
-    coins = int(input())
+    coins = int(input())/10
     print('enter favorites:')
-    favorites = int(input())
-    result = lwlr([coins, favorites], sample_x, sample_y, k=0.1)
+    favorites = int(input())/10
+    result = lwlr([coins, favorites], sample_x, sample_y, k=0.2)
     print('get theta result')
     print(str(result))
     result = [coins, favorites] * result
-    print(str(result))
+    print(str(result[0, 0]*100))
+    # test_k(sample_x, sample_y)
+
