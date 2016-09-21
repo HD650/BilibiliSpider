@@ -35,8 +35,12 @@ jieba
 Basically, this project can run. ⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄    
 Crawled 900 thousand of video info from game category by 10 instances of spider and 2 day period.
 Represented video info spider crawled with 3d plot which help us to have a better view of video info.      
-Deducted the play amount of video by locally weighted regression algorithm trained by samples spider crawled,the result is basically accurate.    
+Deducted the play amount of video by locally weighted regression algorithm trained by samples spider crawled, some results have large error.    
 ## Changes##
+
+ - 9.21
+
+Add code to calculate the error of locally weighted regression, so we can choose a best value of k. But the eroor is still large.          
 
  - 9.18
 
@@ -111,7 +115,8 @@ Redis cluster doesn't support transaction, may causes some atomic problems.
 Didn't test wether accessing to redis cluster faster than directly accessing to SQL database. (Some books and documents recommend to use redis but i haven't test this case yet)     
 Some pages need login(the other way, cookies), but sending cookies require more codes and bandwidth. I'm considering temporarily store all these pages and crawl them later.   
 Now, spiders can't update video data in redis since the dupefilter stops them to crawl the pages they have seen before.    
-Had test a long term crawling but when crawling finished, we didn't go through all pages we want. (only crawled 900000  pages but there were approximate 10000000 pages)   
+Had test a long term crawling but when crawling finished, we didn't go through all pages we want. (only crawled 900000  pages but there were approximate 10000000 pages)    
+Error of locall weighted regression is large, maybe we need some non-linear model.   
 ## Future ##
 We need some fileds to record the popularities of authors.   
 Will add some code to analyse the data we crawled.  
@@ -145,8 +150,12 @@ jieba
 该工程目前基本可以运行。⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄   
 使用10个爬虫实例和2天时间爬取了90万条游戏分类的视频信息样本。
 通过做出视频信息样本的3d图标，给我们提供了宏观分析数据的视图。      
-使用样本训练局部权重回归算法，并用它预测视频的播放量，其结果基本正确。    
+使用样本训练局部权重回归算法，并用它预测视频的播放量，某些样本点误差很大。    
 ## 更改 ##
+
+ - 9.21
+
+增加了计算局部权重回归误差的代码，这样可以让我们选择最好的k值，但是这样误差依旧很大。          
 
  - 9.18
 
@@ -221,6 +230,7 @@ Redis集群不支持事物，会造成一些原子性问题。
 有些页面需要登录才能访问（需要cookies），但是发送cookies需要额外的代码和带宽。暂时考虑把这些网页暂存起来之后统一爬取。  
 现在爬虫不能更新redis中的数据，因为dupefilter会阻止爬虫爬取之前见过的页面。   
 试验了一次长时间爬取，爬取结束时并没有爬取到所有预计的页面。（爬取了90w页面，但是估计有1000w页面左右）    
+局部权重回归算法的结果依旧误差很大，我们可能要尝试非线性模型。   
 ## 未来计划 ##
 需要一些字段记录视频up主的热度。   
 加入一些代码以分析爬取得到的数据。       
