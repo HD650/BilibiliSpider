@@ -38,6 +38,10 @@ Represented video info with 3d plot which help us to have a better view of the w
 Deducted the play amount of video by locally weighted regression algorithm trained by samples spider crawled, some results have large error but some work well.    
 ## Changes##
 
+ - 9.22
+
+Add a new implementation of locally weighted regression which uses list instead of matrix, so memory will not overflow when samples amount are large.   
+
  - 9.21
 
 Add code to calculate the error of locally weighted regression, so we can choose a best value of k.    
@@ -154,6 +158,10 @@ jieba
 通过做出视频信息样本的3d图标，给我们提供了宏观分析数据的视图。      
 使用样本训练局部权重回归算法，并用它预测视频的播放量，某些样本点误差很大，某些估计良好。    
 ## 更改 ##
+
+ - 9.22
+
+增加了新的局部权重回归算法的实现，使用队列代替了矩阵，这样当样本很多的时候，内存就不会爆炸了。      
 
  - 9.21
 
