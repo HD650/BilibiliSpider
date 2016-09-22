@@ -57,10 +57,11 @@ else:
     REDIS_CLUSTER_START_NODE = {'host': 'localhost', 'port': 7000}
 
 # 配置SQL数据库的入口
-SQL_HOST = 'localhost'
-SQL_PORT = 3306
-SQL_USER = 'root'
-SQL_PASSWORD = 'root'
+SQL_HOST = '192.168.253.2'
+# SQL_PORT = 3306
+SQL_PORT = 8000
+SQL_USER = 'zzk'
+SQL_PASSWORD = 'zzk'
 SQL_DATABASE = 'bilibili'
 SQL_TABLE = 'video'
 

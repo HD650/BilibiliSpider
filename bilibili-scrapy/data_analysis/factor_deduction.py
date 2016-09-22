@@ -1,6 +1,6 @@
 # 暂时只是个demo，我们通过线性回归可以判断硬币，收藏，评论，up主关注度这几个自变量和因变量播放数的关系，从而推断视频热度
 # 中 play，barrage，favorite和reply的大致比值
-
+import matplotlib.pyplot as plt
 from data_analysis.linear_regression import bgd, lwlr
 from data_analysis.data_reader import read_video_info
 from data_analysis.plot_generator import draw_plays_favorites_coins_3d
@@ -47,6 +47,33 @@ def lw_regression(video_info):
     # 计算出播放量
     result = [coins, favorites, 1] * result
     print(str(result[0, 0]*plays_divisor))
+
+
+def draw_lwlr(video_info):
+    sample_x, sample_y = process_samples(video_info)
+    ax = draw_plays_favorites_coins_3d(video_info)
+    sample_x_ordered = list()
+    sample_y_ordered = list()
+    for i, item in enumerate(sample_x):
+        if len(sample_x_ordered) is 0:
+            sample_x_ordered.append(item)
+            sample_y_ordered.insert(i, sample_y[i])
+        else:
+            for sample in sample_x_ordered:
+                if item[0] < sample[0]:
+                    sample_x_ordered.insert(i, item)
+                    sample_y_ordered.insert(i, sample_y[i])
+                    break
+                else:
+                    continue
+    draw_y = list()
+    for item in sample_x_ordered:
+        ws = lwlr(item, sample_x, sample_y, k=0.01)
+        predict_y = item * ws.T
+        predict_y = predict_y[0, 0]
+        draw_y.append(predict_y)
+    ax.plot(sample_x_ordered[:][0], sample_x_ordered[:][1], draw_y)
+    plt.show()
 
 
 def test_k(video_info):
@@ -108,5 +135,5 @@ def bgd_regression(video_info):
 
 if __name__ == '__main__':
     video_info = read_video_info()
-    test_k(video_info)
+    draw_lwlr(video_info)
 

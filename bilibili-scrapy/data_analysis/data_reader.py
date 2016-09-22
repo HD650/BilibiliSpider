@@ -35,7 +35,7 @@ def read_video_info():
                 print(str(category)+' is selected!')
                 # 取出所有的视频信息
                 print('loading...')
-                videoinfo_query = '''SELECT coins,favorites,barrages,plays,name
+                videoinfo_query = '''SELECT coins,favorites,barrages,plays,name,av,replys
                                       FROM {0} WHERE category='{1}';'''.format(table, category)
                 cur.execute(videoinfo_query)
                 video_info = cur.fetchall()
@@ -49,7 +49,7 @@ def read_video_info():
                 video_info = dict()
                 print('loading...')
                 for category in categories:
-                    videoinfo_query = '''SELECT coins,favorites,barrages,plays,name
+                    videoinfo_query = '''SELECT coins,favorites,barrages,plays,name,av,replys
                                           FROM {0} WHERE category='{1}';'''.format(table, str(category[0]))
                     cur.execute(videoinfo_query)
                     video_info[category] = cur.fetchall()
