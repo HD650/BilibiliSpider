@@ -1,13 +1,15 @@
 # 暂时只是个demo，我们通过线性回归可以判断硬币，收藏，评论，up主关注度这几个自变量和因变量播放数的关系，从而推断视频热度
 # 中 play，barrage，favorite和reply的大致比值
-
-from data_analysis.linear_regression import bgd, lwlr
+import matplotlib.pyplot as plt
+from data_analysis.linear_regression import bgd, lwlr_normal, lwlr_array
 from data_analysis.data_reader import read_video_info
 from data_analysis.plot_generator import draw_plays_favorites_coins_3d
 
 # 对数据进行缩小，防止矩阵运算中数量级过大导致程序崩溃
 coins_favorites_divisor = 10
 plays_divisor = 100
+# 局部权重线性算法使用原版还是队列版
+lwlr = lwlr_array
 
 
 def process_samples(video_info):
@@ -37,7 +39,7 @@ def lw_regression(video_info):
     print('enter favorites:')
     favorites = int(input())/coins_favorites_divisor
     # 使用coins，favorites，1作为目标点，所有数据作为样本
-    result = lwlr([coins, favorites, 1], sample_x, sample_y, k=0.003)
+    result = lwlr([coins, favorites, 1], sample_x, sample_y, k=0.1)
     if result is None:
         # 权重矩阵不可逆，一般是因为其值为0，原因是样本不够或者是k取值太小
         print('not enough samples within these coins and favorites!')
@@ -47,6 +49,43 @@ def lw_regression(video_info):
     # 计算出播放量
     result = [coins, favorites, 1] * result
     print(str(result[0, 0]*plays_divisor))
+
+
+def draw_lwlr(video_info):
+    sample_x, sample_y = process_samples(video_info)
+    ax = draw_plays_favorites_coins_3d(video_info)
+    sample_x_ordered = list()
+    sample_y_ordered = list()
+    for i, item in enumerate(sample_x):
+        if len(sample_x_ordered) is 0:
+            sample_x_ordered.append(item)
+            sample_y_ordered.insert(i, sample_y[i])
+        else:
+            for sample in sample_x_ordered:
+                if sample[0] < item[0]:
+                    sample_x_ordered.insert(i, item)
+                    sample_y_ordered.insert(i, sample_y[i])
+                    break
+                elif len(sample_x_ordered) is 1:
+                    sample_x_ordered.insert(0, item)
+                    sample_y_ordered.insert(0, sample_y[i])
+                else:
+                    continue
+    print('sorting finished!')
+    draw_y = list()
+    for i, item in enumerate(sample_x_ordered):
+        ws = lwlr(item, sample_x, sample_y, k=0.2)
+        if ws is None:
+            sample_x_ordered.pop(i)
+            sample_y_ordered.pop(i)
+            print('discard')
+            continue
+        predict_y = item * ws
+        predict_y = predict_y[0, 0]
+        print(str(item)+'  '+str(predict_y))
+        draw_y.append(predict_y)
+    ax.plot(sample_x_ordered[:][0], sample_x_ordered[:][1], draw_y)
+    plt.show()
 
 
 def test_k(video_info):
@@ -68,11 +107,11 @@ def test_k(video_info):
                 print('not enough samples with these coins and favorites'.format(str(k)))
                 continue
             result = test_sample_x[i]*result
-            print('result: {0}  sample: {1}'.format(result[0, 0], sample_y[i]))
+            print('result: {0}  sample: {1}'.format(result[0, 0]*plays_divisor, sample_y[i]*plays_divisor))
             # 计算误差
             error += (result[0, 0]-sample_y[i])/sample_y[i]
         # 某k情况下的总误差
-        print('total error: '+str(error/20*100))
+        print('total error: '+str(error/len(test_sample_x)*100))
         print()
         print()
 
@@ -108,5 +147,7 @@ def bgd_regression(video_info):
 
 if __name__ == '__main__':
     video_info = read_video_info()
+    # draw_lwlr(video_info)
+    # lw_regression(video_info)
     test_k(video_info)
 
