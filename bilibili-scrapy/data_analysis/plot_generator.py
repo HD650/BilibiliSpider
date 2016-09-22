@@ -5,6 +5,10 @@ from mpl_toolkits.mplot3d import proj3d, Axes3D
 import random
 import numpy as np
 from data_analysis.data_reader import read_video_info
+import sys
+sys.path.append(r'.\bilibili-scrapy')
+sys.path.append(r'..')
+import settings
 mpl.rcParams['font.sans-serif'] = ['SimHei']
 mpl.rcParams['axes.unicode_minus'] = False
 
@@ -26,7 +30,7 @@ def draw_plays_favorites_coins_3d(video_info):
     max['barrages_max_index'] = ['', 0]
     max['coins_max_index'] = ['', 0]
     for key in video_info:
-        for index, item in enumerate(video_info[key]):
+        for index, item in enumerate(video_info):
             if plays_max < item[3]:
                 plays_max = item[3]
                 max['plays_max_index'][0] = key
